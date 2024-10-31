@@ -1,0 +1,410 @@
+kind: DataConnectorLink
+version: v1
+definition:
+  name: github
+  url:
+    readWriteUrls:
+      read:
+        valueFromEnv: APP_GITHUB_READ_URL
+      write:
+        valueFromEnv: APP_GITHUB_WRITE_URL
+  headers:
+    Authorization:
+      valueFromEnv: APP_GITHUB_AUTHORIZATION_HEADER
+  schema:
+    version: v0.1
+    schema:
+      scalar_types:
+        BigInt:
+          representation:
+            type: biginteger
+          aggregate_functions: {}
+          comparison_operators:
+            _eq:
+              type: equal
+            _gt:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+            _gte:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+            _lt:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+            _lte:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+            _neq:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+        Boolean:
+          aggregate_functions: {}
+          comparison_operators:
+            _eq:
+              type: equal
+        Float:
+          aggregate_functions: {}
+          comparison_operators:
+            _eq:
+              type: equal
+            _gt:
+              type: custom
+              argument_type:
+                type: named
+                name: Float
+            _gte:
+              type: custom
+              argument_type:
+                type: named
+                name: Float
+            _lt:
+              type: custom
+              argument_type:
+                type: named
+                name: Float
+            _lte:
+              type: custom
+              argument_type:
+                type: named
+                name: Float
+            _neq:
+              type: custom
+              argument_type:
+                type: named
+                name: Float
+        Int:
+          aggregate_functions: {}
+          comparison_operators:
+            _eq:
+              type: equal
+            _gt:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+            _gte:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+            _lt:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+            _lte:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+            _neq:
+              type: custom
+              argument_type:
+                type: named
+                name: Int
+        String:
+          aggregate_functions: {}
+          comparison_operators:
+            _eq:
+              type: equal
+            _glob:
+              type: custom
+              argument_type:
+                type: named
+                name: String
+            _gt:
+              type: custom
+              argument_type:
+                type: named
+                name: String
+            _gte:
+              type: custom
+              argument_type:
+                type: named
+                name: String
+            _like:
+              type: custom
+              argument_type:
+                type: named
+                name: String
+            _lt:
+              type: custom
+              argument_type:
+                type: named
+                name: String
+            _lte:
+              type: custom
+              argument_type:
+                type: named
+                name: String
+            _neq:
+              type: custom
+              argument_type:
+                type: named
+                name: String
+        Timestamp:
+          aggregate_functions: {}
+          comparison_operators:
+            _eq:
+              type: equal
+            _gt:
+              type: custom
+              argument_type:
+                type: named
+                name: Timestamp
+            _gte:
+              type: custom
+              argument_type:
+                type: named
+                name: Timestamp
+            _lt:
+              type: custom
+              argument_type:
+                type: named
+                name: Timestamp
+            _lte:
+              type: custom
+              argument_type:
+                type: named
+                name: Timestamp
+            _neq:
+              type: custom
+              argument_type:
+                type: named
+                name: Timestamp
+      object_types:
+        comment_sync_state:
+          description: No description available
+          fields:
+            issue_id:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: BigInt
+            last_comment_sync:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Timestamp
+            repository:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+        github_comments:
+          description: No description available
+          fields:
+            body:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            created_at:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Timestamp
+            id:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: BigInt
+            issue_id:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: BigInt
+            repository:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            updated_at:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Timestamp
+            user_login:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+        github_issues:
+          description: No description available
+          fields:
+            body:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            closed_at:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Timestamp
+            comment_count:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int
+            created_at:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Timestamp
+            id:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: BigInt
+            labels:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            number:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int
+            repository:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            state:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            title:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            updated_at:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Timestamp
+            user_login:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+        issue_sync_state:
+          description: No description available
+          fields:
+            last_issue_sync:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Timestamp
+            repository:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+      collections:
+        - name: comment_sync_state
+          description: No description available
+          arguments: {}
+          type: comment_sync_state
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: github_comments
+          description: No description available
+          arguments: {}
+          type: github_comments
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: github_issues
+          description: No description available
+          arguments: {}
+          type: github_issues
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: issue_sync_state
+          description: No description available
+          arguments: {}
+          type: issue_sync_state
+          uniqueness_constraints: {}
+          foreign_keys: {}
+      functions: []
+      procedures: []
+    capabilities:
+      version: 0.1.6
+      capabilities:
+        query:
+          aggregates: {}
+          variables: {}
+          nested_fields: {}
+        mutation: {}
+        relationships:
+          relation_comparisons: {}
+          order_by_aggregate: {}
+  argumentPresets:
+    - argument: headers
+      value:
+        httpHeaders:
+          forward:
+            - x-hasura-oauth-services
+          additional: {}

@@ -1,0 +1,4 @@
+engine/build
+/.env
+/.env.*
+!.env.example

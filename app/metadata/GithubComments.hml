@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: GithubComments
+  description: No description available
+  fields:
+    - name: body
+      type: String
+      description: No description available
+    - name: createdAt
+      type: Timestamp
+      description: No description available
+    - name: id
+      type: BigInt
+      description: No description available
+    - name: issueId
+      type: BigInt
+      description: No description available
+    - name: repository
+      type: String
+      description: No description available
+    - name: updatedAt
+      type: Timestamp
+      description: No description available
+    - name: userLogin
+      type: String
+      description: No description available
+  graphql:
+    typeName: GithubComments
+    inputTypeName: GithubCommentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: github
+      dataConnectorObjectType: github_comments
+      fieldMapping:
+        body:
+          column:
+            name: body
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        issueId:
+          column:
+            name: issue_id
+        repository:
+          column:
+            name: repository
+        updatedAt:
+          column:
+            name: updated_at
+        userLogin:
+          column:
+            name: user_login
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: GithubComments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - body
+          - createdAt
+          - id
+          - issueId
+          - repository
+          - updatedAt
+          - userLogin
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: GithubCommentsBoolExp
+  operand:
+    object:
+      type: GithubComments
+      comparableFields:
+        - fieldName: body
+          booleanExpressionType: StringBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: id
+          booleanExpressionType: BigIntBoolExp
+        - fieldName: issueId
+          booleanExpressionType: BigIntBoolExp
+        - fieldName: repository
+          booleanExpressionType: StringBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: userLogin
+          booleanExpressionType: StringBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: GithubCommentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: GithubCommentsAggExp
+  operand:
+    object:
+      aggregatedType: GithubComments
+      aggregatableFields:
+        - fieldName: body
+          aggregateExpression: StringAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: id
+          aggregateExpression: BigIntAggExp
+        - fieldName: issueId
+          aggregateExpression: BigIntAggExp
+        - fieldName: repository
+          aggregateExpression: StringAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: userLogin
+          aggregateExpression: StringAggExp
+  count:
+    enable: true
+  graphql:
+    selectTypeName: GithubCommentsAggExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: GithubComments
+  objectType: GithubComments
+  source:
+    dataConnectorName: github
+    collection: github_comments
+  filterExpressionType: GithubCommentsBoolExp
+  aggregateExpression: GithubCommentsAggExp
+  orderableFields:
+    - fieldName: body
+      orderByDirections:
+        enableAll: true
+    - fieldName: createdAt
+      orderByDirections:
+        enableAll: true
+    - fieldName: id
+      orderByDirections:
+        enableAll: true
+    - fieldName: issueId
+      orderByDirections:
+        enableAll: true
+    - fieldName: repository
+      orderByDirections:
+        enableAll: true
+    - fieldName: updatedAt
+      orderByDirections:
+        enableAll: true
+    - fieldName: userLogin
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: githubComments
+    selectUniques: []
+    orderByExpressionType: GithubCommentsOrderBy
+    filterInputTypeName: GithubCommentsFilterInput
+    aggregate:
+      queryRootField: githubCommentsAggregate
+  description: No description available
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: GithubComments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+

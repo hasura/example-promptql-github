@@ -1,0 +1,5 @@
+node_modules/
+duck.db
+duck.db.wal
+github.index.ts
+github.functions.ts

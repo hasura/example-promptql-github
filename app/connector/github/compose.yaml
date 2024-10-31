@@ -1,0 +1,14 @@
+services:
+  app_github:
+    build:
+      context: .
+      dockerfile: .hasura-connector/Dockerfile
+    environment:
+      HASURA_SERVICE_TOKEN_SECRET: $APP_GITHUB_HASURA_SERVICE_TOKEN_SECRET
+      OTEL_EXPORTER_OTLP_ENDPOINT: $APP_GITHUB_OTEL_EXPORTER_OTLP_ENDPOINT
+      OTEL_SERVICE_NAME: $APP_GITHUB_OTEL_SERVICE_NAME
+      GITHUB_API_TOKEN: $GITHUB_API_TOKEN
+    extra_hosts:
+      - local.hasura.dev:host-gateway
+    ports:
+      - 4938:8080

@@ -1,0 +1,18 @@
+kind: Subgraph
+version: v2
+definition:
+  name: app
+  generator:
+    rootPath: .
+  includePaths:
+    - metadata
+  envMapping:
+    APP_GITHUB_AUTHORIZATION_HEADER:
+      fromEnv: APP_GITHUB_AUTHORIZATION_HEADER
+    APP_GITHUB_READ_URL:
+      fromEnv: APP_GITHUB_READ_URL
+    APP_GITHUB_WRITE_URL:
+      fromEnv: APP_GITHUB_WRITE_URL
+  connectors:
+    - path: connector/github/connector.yaml
+      connectorLinkName: github

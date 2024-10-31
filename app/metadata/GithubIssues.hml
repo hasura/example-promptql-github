@@ -1,0 +1,256 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: GithubIssues
+  description: No description available
+  fields:
+    - name: body
+      type: String
+      description: No description available
+    - name: closedAt
+      type: Timestamp
+      description: No description available
+    - name: commentCount
+      type: Int
+      description: No description available
+    - name: createdAt
+      type: Timestamp
+      description: No description available
+    - name: id
+      type: BigInt
+      description: No description available
+    - name: labels
+      type: String
+      description: No description available
+    - name: number
+      type: Int
+      description: No description available
+    - name: repository
+      type: String
+      description: No description available
+    - name: state
+      type: String
+      description: No description available
+    - name: title
+      type: String
+      description: No description available
+    - name: updatedAt
+      type: Timestamp
+      description: No description available
+    - name: userLogin
+      type: String
+      description: No description available
+  graphql:
+    typeName: GithubIssues
+    inputTypeName: GithubIssuesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: github
+      dataConnectorObjectType: github_issues
+      fieldMapping:
+        body:
+          column:
+            name: body
+        closedAt:
+          column:
+            name: closed_at
+        commentCount:
+          column:
+            name: comment_count
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        labels:
+          column:
+            name: labels
+        number:
+          column:
+            name: number
+        repository:
+          column:
+            name: repository
+        state:
+          column:
+            name: state
+        title:
+          column:
+            name: title
+        updatedAt:
+          column:
+            name: updated_at
+        userLogin:
+          column:
+            name: user_login
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: GithubIssues
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - body
+          - closedAt
+          - commentCount
+          - createdAt
+          - id
+          - labels
+          - number
+          - repository
+          - state
+          - title
+          - updatedAt
+          - userLogin
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: GithubIssuesBoolExp
+  operand:
+    object:
+      type: GithubIssues
+      comparableFields:
+        - fieldName: body
+          booleanExpressionType: StringBoolExp
+        - fieldName: closedAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: commentCount
+          booleanExpressionType: IntBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: id
+          booleanExpressionType: BigIntBoolExp
+        - fieldName: labels
+          booleanExpressionType: StringBoolExp
+        - fieldName: number
+          booleanExpressionType: IntBoolExp
+        - fieldName: repository
+          booleanExpressionType: StringBoolExp
+        - fieldName: state
+          booleanExpressionType: StringBoolExp
+        - fieldName: title
+          booleanExpressionType: StringBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: userLogin
+          booleanExpressionType: StringBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: GithubIssuesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: GithubIssuesAggExp
+  operand:
+    object:
+      aggregatedType: GithubIssues
+      aggregatableFields:
+        - fieldName: body
+          aggregateExpression: StringAggExp
+        - fieldName: closedAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: commentCount
+          aggregateExpression: IntAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: id
+          aggregateExpression: BigIntAggExp
+        - fieldName: labels
+          aggregateExpression: StringAggExp
+        - fieldName: number
+          aggregateExpression: IntAggExp
+        - fieldName: repository
+          aggregateExpression: StringAggExp
+        - fieldName: state
+          aggregateExpression: StringAggExp
+        - fieldName: title
+          aggregateExpression: StringAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: userLogin
+          aggregateExpression: StringAggExp
+  count:
+    enable: true
+  graphql:
+    selectTypeName: GithubIssuesAggExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: GithubIssues
+  objectType: GithubIssues
+  source:
+    dataConnectorName: github
+    collection: github_issues
+  filterExpressionType: GithubIssuesBoolExp
+  aggregateExpression: GithubIssuesAggExp
+  orderableFields:
+    - fieldName: body
+      orderByDirections:
+        enableAll: true
+    - fieldName: closedAt
+      orderByDirections:
+        enableAll: true
+    - fieldName: commentCount
+      orderByDirections:
+        enableAll: true
+    - fieldName: createdAt
+      orderByDirections:
+        enableAll: true
+    - fieldName: id
+      orderByDirections:
+        enableAll: true
+    - fieldName: labels
+      orderByDirections:
+        enableAll: true
+    - fieldName: number
+      orderByDirections:
+        enableAll: true
+    - fieldName: repository
+      orderByDirections:
+        enableAll: true
+    - fieldName: state
+      orderByDirections:
+        enableAll: true
+    - fieldName: title
+      orderByDirections:
+        enableAll: true
+    - fieldName: updatedAt
+      orderByDirections:
+        enableAll: true
+    - fieldName: userLogin
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: githubIssues
+    selectUniques: []
+    orderByExpressionType: GithubIssuesOrderBy
+    filterInputTypeName: GithubIssuesFilterInput
+    aggregate:
+      queryRootField: githubIssuesAggregate
+  description: No description available
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: GithubIssues
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
