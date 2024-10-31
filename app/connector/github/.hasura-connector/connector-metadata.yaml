@@ -1,6 +1,15 @@
 packagingDefinition:
   type: ManagedDockerBuild
-supportedEnvironmentVariables: []
+supportedEnvironmentVariables:
+  - name: FEATURE_PERSISTENT_DATA
+    description: Persist data in DDN connector deployments
+    defaultValue: true
+  - name: FEATURE_MIN_INSTANCES
+    description: Minimum number of instances to keep running (set to 1 to keep one instance running at all times)
+    defaultValue: 1
+  - name: DUCKDB_URL
+    description: Where to store the DuckDB database. Do not change this to outside the persist-data directory or data may not be persisted on connector restarts.
+    defaultValue: /etc/connector/persist-data/duck.db
 commands: {}
 dockerComposeWatch:
   # Rebuild the container if a new package restore is required because package[-lock].json changed

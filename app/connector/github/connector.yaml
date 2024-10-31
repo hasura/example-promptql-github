@@ -3,7 +3,7 @@ version: v2
 definition:
   name: github
   subgraph: app
-  source: hasura/duckduckapi:v0.4.1
+  source: hasura/duckduckapi:v0.5.0
   context: .
   envMapping:
     HASURA_SERVICE_TOKEN_SECRET:
@@ -12,5 +12,11 @@ definition:
       fromEnv: APP_GITHUB_OTEL_EXPORTER_OTLP_ENDPOINT
     OTEL_SERVICE_NAME:
       fromEnv: APP_GITHUB_OTEL_SERVICE_NAME
+    FEATURE_PERSISTENT_DATA:
+      fromEnv: APP_GITHUB_FEATURE_PERSISTENT_DATA
+    FEATURE_MIN_INSTANCES:
+      fromEnv: APP_GITHUB_FEATURE_MIN_INSTANCES
+    DUCKDB_URL:
+      fromEnv: APP_GITHUB_DUCKDB_URL
     GITHUB_API_TOKEN:
       fromEnv: GITHUB_API_TOKEN
