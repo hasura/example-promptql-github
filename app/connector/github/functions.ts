@@ -1,6 +1,4 @@
-import { JSONValue } from "@hasura/ndc-lambda-sdk";
-import { GMail, GoogleCalendar } from "@hasura/ndc-duckduckapi/services";
-import { getOAuthCredentialsFromHeader, getDB, transaction } from "@hasura/ndc-duckduckapi";
+import { getDB, transaction } from "@hasura/ndc-duckduckapi";
 
 export const GithubIssuesSyncSchema = `
         CREATE TABLE IF NOT EXISTS github_issues (
@@ -80,8 +78,8 @@ interface IssueCommentSyncState {
 }
 
 export class GitHubIssueSyncManager {
-  private baseUrl = 'https://api.github.com';
-  private token: string = '';
+  private baseUrl = "https://api.github.com";
+  private token: string = "";
   private owner: string;
   private repo: string;
   private syncInterval: NodeJS.Timeout | null = null;
@@ -92,7 +90,10 @@ export class GitHubIssueSyncManager {
     console.log(`Initializing GitHub sync for ${owner}/${repo}`);
   }
 
-  private async githubFetch(endpoint: string, params: Record<string, any> = {}): Promise<any> {
+  private async githubFetch(
+    endpoint: string,
+    params: Record<string, any> = {}
+  ): Promise<any> {
     const url = new URL(`${this.baseUrl}${endpoint}`);
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -102,15 +103,17 @@ export class GitHubIssueSyncManager {
 
     const response = await fetch(url.toString(), {
       headers: {
-        'Authorization': `token ${this.token}`,
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'GitHub-Issue-Sync'
-      }
+        Authorization: `token ${this.token}`,
+        Accept: "application/vnd.github.v3+json",
+        "User-Agent": "GitHub-Issue-Sync",
+      },
     });
 
     if (!response.ok) {
       const error = await response.json().catch(() => null);
-      throw new Error(`GitHub API error (${response.status}): ${JSON.stringify(error)}`);
+      throw new Error(
+        `GitHub API error (${response.status}): ${JSON.stringify(error)}`
+      );
     }
 
     return response.json();
@@ -118,28 +121,30 @@ export class GitHubIssueSyncManager {
 
   async initialize(token: string): Promise<boolean> {
     try {
-
       this.getSyncStatus();
-      console.log('Starting initialization...');
+      console.log("Starting initialization...");
       this.token = token;
-      
+
       // Validate token by fetching user info
-      console.log('Validating GitHub token...');
-      await this.githubFetch('/user');
-      console.log('Token validation successful');
-      
+      console.log("Validating GitHub token...");
+      await this.githubFetch("/user");
+      console.log("Token validation successful");
+
       // Start initial sync
-      console.log('Starting initial sync...');
+      console.log("Starting initial sync...");
       await this.syncIssuesAndComments();
-      console.log('Initial sync complete');
-      
+      console.log("Initial sync complete");
+
       // Set up continuous sync
-      console.log('Setting up continuous sync (5 minute interval)...');
-      this.syncInterval = setInterval(() => this.syncIssuesAndComments(), 5 * 60 * 1000);
-      
+      console.log("Setting up continuous sync (5 minute interval)...");
+      this.syncInterval = setInterval(
+        () => this.syncIssuesAndComments(),
+        5 * 60 * 1000
+      );
+
       return true;
     } catch (error) {
-      console.error('Initialization failed:', error);
+      console.error("Initialization failed:", error);
       return false;
     }
   }
@@ -147,15 +152,15 @@ export class GitHubIssueSyncManager {
   private async getLastIssueSyncState(): Promise<SyncState | null> {
     const db = await getDB();
     try {
-        const result = await db.all(
-          `SELECT repository, last_issue_sync 
+      const result = await db.all(
+        `SELECT repository, last_issue_sync 
          FROM issue_sync_state 
          WHERE repository = ?`,
-          `${this.owner}/${this.repo}`
-        );
-        return result.length > 0 ? result[0] as SyncState : null;
+        `${this.owner}/${this.repo}`
+      );
+      return result.length > 0 ? (result[0] as SyncState) : null;
     } catch (error) {
-      console.error('Failed to get issue sync state:', error);
+      console.error("Failed to get issue sync state:", error);
       throw error;
     }
   }
@@ -172,24 +177,32 @@ export class GitHubIssueSyncManager {
       );
       return result.length > 0 ? result[0].last_comment_sync : null;
     } catch (error) {
-      console.error(`Failed to get comment sync state for issue ${issueId}:`, error);
+      console.error(
+        `Failed to get comment sync state for issue ${issueId}:`,
+        error
+      );
       throw error;
     }
   }
 
   private async updateIssueSyncState(): Promise<void> {
     try {
-    const db = await getDB();
+      const db = await getDB();
       await transaction(db, async (conn) => {
-        await conn.run(`
+        await conn.run(
+          `
           INSERT INTO issue_sync_state (repository, last_issue_sync)
           VALUES (?, ?)
           ON CONFLICT(repository) DO UPDATE SET last_issue_sync = ?
-        `, `${this.owner}/${this.repo}`, new Date().toISOString(), new Date().toISOString());
+        `,
+          `${this.owner}/${this.repo}`,
+          new Date().toISOString(),
+          new Date().toISOString()
+        );
       });
-      console.log('Issue sync state updated');
+      console.log("Issue sync state updated");
     } catch (error) {
-      console.error('Failed to update issue sync state:', error);
+      console.error("Failed to update issue sync state:", error);
       throw error;
     }
   }
@@ -198,15 +211,24 @@ export class GitHubIssueSyncManager {
     try {
       const db = await getDB();
       await transaction(db, async (conn) => {
-        await conn.run(`
+        await conn.run(
+          `
           INSERT INTO comment_sync_state (issue_id, repository, last_comment_sync)
           VALUES (?, ?, ?)
           ON CONFLICT(issue_id) DO UPDATE SET last_comment_sync = ?
-        `, issueId, `${this.owner}/${this.repo}`, new Date().toISOString(), new Date().toISOString());
+        `,
+          issueId,
+          `${this.owner}/${this.repo}`,
+          new Date().toISOString(),
+          new Date().toISOString()
+        );
       });
       console.log(`Comment sync state updated for issue ${issueId}`);
     } catch (error) {
-      console.error(`Failed to update comment sync state for issue ${issueId}:`, error);
+      console.error(
+        `Failed to update comment sync state for issue ${issueId}:`,
+        error
+      );
       throw error;
     }
   }
@@ -214,18 +236,18 @@ export class GitHubIssueSyncManager {
   private async fetchAllIssues(since?: string): Promise<Issue[]> {
     const issues: Issue[] = [];
     let page = 1;
-    
+
     try {
       while (true) {
         console.log(`Fetching issues page ${page}...`);
         const params: Record<string, any> = {
-          state: 'all',
+          state: "all",
           per_page: 100,
           page,
-          sort: 'updated',
-          direction: 'desc'
+          sort: "updated",
+          direction: "desc",
         };
-        
+
         if (since) {
           params.since = since;
         }
@@ -234,31 +256,36 @@ export class GitHubIssueSyncManager {
           `/repos/${this.owner}/${this.repo}/issues`,
           params
         );
-        
+
         if (data.length === 0) break;
-        
+
         issues.push(...data);
         page++;
       }
-      
+
       console.log(`Fetched total of ${issues.length} issues`);
       return issues;
     } catch (error) {
-      console.error('Failed to fetch issues:', error);
+      console.error("Failed to fetch issues:", error);
       throw error;
     }
   }
 
-  private async fetchCommentsForIssue(issueNumber: number, since?: string): Promise<IssueComment[]> {
+  private async fetchCommentsForIssue(
+    issueNumber: number,
+    since?: string
+  ): Promise<IssueComment[]> {
     const comments: IssueComment[] = [];
     let page = 1;
 
     try {
       while (true) {
-        console.log(`Fetching comments page ${page} for issue #${issueNumber}...`);
+        console.log(
+          `Fetching comments page ${page} for issue #${issueNumber}...`
+        );
         const params: Record<string, any> = {
           per_page: 100,
-          page
+          page,
         };
 
         if (since) {
@@ -276,47 +303,57 @@ export class GitHubIssueSyncManager {
         page++;
       }
 
-      console.log(`Fetched ${comments.length} comments for issue #${issueNumber}`);
+      console.log(
+        `Fetched ${comments.length} comments for issue #${issueNumber}`
+      );
       return comments;
     } catch (error) {
-      console.error(`Failed to fetch comments for issue #${issueNumber}:`, error);
+      console.error(
+        `Failed to fetch comments for issue #${issueNumber}:`,
+        error
+      );
       throw error;
     }
   }
 
   private async syncIssuesAndComments(): Promise<void> {
     try {
-      console.log('Starting sync cycle...');
+      console.log("Starting sync cycle...");
       const lastIssueSync = await this.getLastIssueSyncState();
-      console.log(`Last issue sync: ${lastIssueSync?.last_issue_sync || 'never'}`);
-      
+      console.log(
+        `Last issue sync: ${lastIssueSync?.last_issue_sync || "never"}`
+      );
+
       // First sync issues
       const issues = await this.fetchAllIssues(lastIssueSync?.last_issue_sync);
       console.log(`Fetched ${issues.length} issues`);
-      
+
       if (issues.length > 0) {
         await this.saveIssues(issues);
         await this.updateIssueSyncState();
-        console.log('Issues saved to database');
+        console.log("Issues saved to database");
       }
 
       // Then sync comments for issues that need it
       let commentsSynced = 0;
       for (const issue of issues) {
         if (issue.comments > 0) {
-          console.log(`Checking comments for issue #${issue.number} (${issue.comments} comments)`);
+          console.log(
+            `Checking comments for issue #${issue.number} (${issue.comments} comments)`
+          );
           const lastCommentSync = await this.getCommentSyncState(issue.id);
-          
-          const needsCommentSync = !lastCommentSync || 
+
+          const needsCommentSync =
+            !lastCommentSync ||
             new Date(issue.updated_at) > new Date(lastCommentSync);
-          
+
           if (needsCommentSync) {
             console.log(`Syncing comments for issue #${issue.number}`);
             const comments = await this.fetchCommentsForIssue(
               issue.number,
               lastCommentSync || undefined
             );
-            
+
             if (comments.length > 0) {
               await this.saveComments(comments, issue.id);
               await this.updateCommentSyncState(issue.id);
@@ -325,10 +362,10 @@ export class GitHubIssueSyncManager {
           }
         }
       }
-      
+
       console.log(`Sync cycle complete. Synced ${commentsSynced} comments`);
     } catch (error) {
-      console.error('Sync cycle failed:', error);
+      console.error("Sync cycle failed:", error);
     }
   }
 
@@ -337,42 +374,48 @@ export class GitHubIssueSyncManager {
       const db = await getDB();
       await transaction(db, async (conn) => {
         for (const issue of issues) {
-          await conn.run(`
+          await conn.run(
+            `
             INSERT OR REPLACE INTO github_issues (
               id, number, title, body, state, created_at, updated_at, closed_at,
               user_login, labels, comment_count, repository
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `, 
-          issue.id,
-          issue.number,
-          issue.title,
-          issue.body,
-          issue.state,
-          issue.created_at,
-          issue.updated_at,
-          issue.closed_at,
-          issue.user.login,
-          JSON.stringify(issue.labels.map(l => l.name)),
-          issue.comments,
-          `${this.owner}/${this.repo}`
+          `,
+            issue.id,
+            issue.number,
+            issue.title,
+            issue.body,
+            issue.state,
+            issue.created_at,
+            issue.updated_at,
+            issue.closed_at,
+            issue.user.login,
+            JSON.stringify(issue.labels.map((l) => l.name)),
+            issue.comments,
+            `${this.owner}/${this.repo}`
           );
         }
       });
       console.log(`Saved ${issues.length} issues to database`);
     } catch (error) {
-      console.error('Failed to save issues:', error);
+      console.error("Failed to save issues:", error);
       throw error;
     }
   }
 
-  private async saveComments(comments: IssueComment[], issueId: bigint): Promise<void> {
+  private async saveComments(
+    comments: IssueComment[],
+    issueId: bigint
+  ): Promise<void> {
     try {
       const db = await getDB();
       await transaction(db, async (conn) => {
         // If this is a full sync, clear existing comments
         const lastSync = await this.getCommentSyncState(issueId);
         if (!lastSync) {
-          console.log(`Performing full comment sync for issue ID ${issueId}, clearing existing comments...`);
+          console.log(
+            `Performing full comment sync for issue ID ${issueId}, clearing existing comments...`
+          );
           await conn.run(
             `DELETE FROM github_comments WHERE issue_id = ? AND repository = ?`,
             issueId,
@@ -382,18 +425,19 @@ export class GitHubIssueSyncManager {
 
         // Insert or update new comments
         for (const comment of comments) {
-          await conn.run(`
+          await conn.run(
+            `
             INSERT OR REPLACE INTO github_comments (
               id, issue_id, body, user_login, created_at, updated_at, repository
             ) VALUES (?, ?, ?, ?, ?, ?, ?)
           `,
-          comment.id,
-          issueId,
-          comment.body,
-          comment.user.login,
-          comment.created_at,
-          comment.updated_at,
-          `${this.owner}/${this.repo}`
+            comment.id,
+            issueId,
+            comment.body,
+            comment.user.login,
+            comment.created_at,
+            comment.updated_at,
+            `${this.owner}/${this.repo}`
           );
         }
       });
@@ -413,13 +457,13 @@ export class GitHubIssueSyncManager {
         issueNumber,
         `${this.owner}/${this.repo}`
       );
-      
+
       if (issue.length > 0) {
         await db.all(
           `DELETE FROM comment_sync_state WHERE issue_id = ?`,
           issue[0].id
         );
-        
+
         const comments = await this.fetchCommentsForIssue(issueNumber);
         await this.saveComments(comments, issue[0].id);
         await this.updateCommentSyncState(issue[0].id);
@@ -428,7 +472,10 @@ export class GitHubIssueSyncManager {
         console.log(`Issue #${issueNumber} not found`);
       }
     } catch (error) {
-      console.error(`Failed to force resync comments for issue #${issueNumber}:`, error);
+      console.error(
+        `Failed to force resync comments for issue #${issueNumber}:`,
+        error
+      );
       throw error;
     }
   }
@@ -436,13 +483,17 @@ export class GitHubIssueSyncManager {
   public async getIssueComments(issueNumber: number): Promise<any[]> {
     try {
       const db = await getDB();
-      return await db.all(`
+      return await db.all(
+        `
         SELECT c.* 
         FROM github_comments c
         JOIN github_issues i ON i.id = c.issue_id
         WHERE i.number = ? AND i.repository = ?
         ORDER BY c.created_at ASC
-      `, issueNumber, `${this.owner}/${this.repo}`);
+      `,
+        issueNumber,
+        `${this.owner}/${this.repo}`
+      );
     } catch (error) {
       console.error(`Failed to get comments for issue #${issueNumber}:`, error);
       throw error;
@@ -453,7 +504,8 @@ export class GitHubIssueSyncManager {
     try {
       const db = await getDB();
       const issueSync = await this.getLastIssueSyncState();
-      const repoStats = await db.all(`
+      const repoStats = await db.all(
+        `
         SELECT 
           COUNT(DISTINCT i.id) as total_issues,
           COUNT(DISTINCT c.id) as total_comments,
@@ -462,15 +514,17 @@ export class GitHubIssueSyncManager {
         FROM github_issues i
         LEFT JOIN github_comments c ON i.id = c.issue_id
         WHERE i.repository = ?
-      `, `${this.owner}/${this.repo}`);
+      `,
+        `${this.owner}/${this.repo}`
+      );
 
       return {
         repository: `${this.owner}/${this.repo}`,
         last_issue_sync: issueSync?.last_issue_sync || null,
-        stats: repoStats[0]
+        stats: repoStats[0],
       };
     } catch (error) {
-      console.error('Failed to get sync status:', error);
+      console.error("Failed to get sync status:", error);
       throw error;
     }
   }
@@ -478,7 +532,8 @@ export class GitHubIssueSyncManager {
   public async searchIssues(query: string): Promise<any[]> {
     try {
       const db = await getDB();
-      return await db.all(`
+      return await db.all(
+        `
         SELECT i.* 
         FROM github_issues i
         WHERE i.repository = ?
@@ -489,12 +544,12 @@ export class GitHubIssueSyncManager {
           OR i.labels LIKE ?
         )
         ORDER BY i.updated_at DESC
-      `, 
-      `${this.owner}/${this.repo}`,
-      `%${query}%`,
-      `%${query}%`,
-      `%${query}%`,
-      `%${query}%`
+      `,
+        `${this.owner}/${this.repo}`,
+        `%${query}%`,
+        `%${query}%`,
+        `%${query}%`,
+        `%${query}%`
       );
     } catch (error) {
       console.error(`Failed to search issues with query "${query}":`, error);
@@ -505,7 +560,8 @@ export class GitHubIssueSyncManager {
   public async searchComments(query: string): Promise<any[]> {
     try {
       const db = await getDB();
-      return await db.all(`
+      return await db.all(
+        `
         SELECT c.*, i.number as issue_number
         FROM github_comments c
         JOIN github_issues i ON i.id = c.issue_id
@@ -516,9 +572,9 @@ export class GitHubIssueSyncManager {
         )
         ORDER BY c.updated_at DESC
       `,
-      `${this.owner}/${this.repo}`,
-      `%${query}%`,
-      `%${query}%`
+        `${this.owner}/${this.repo}`,
+        `%${query}%`,
+        `%${query}%`
       );
     } catch (error) {
       console.error(`Failed to search comments with query "${query}":`, error);
@@ -528,17 +584,17 @@ export class GitHubIssueSyncManager {
 
   public stop(): void {
     if (this.syncInterval) {
-      console.log('Stopping sync process...');
+      console.log("Stopping sync process...");
       clearInterval(this.syncInterval);
       this.syncInterval = null;
-      console.log('Sync process stopped');
+      console.log("Sync process stopped");
     }
   }
 
   public async cleanup(): Promise<void> {
     try {
       const db = await getDB();
-      console.log('Starting cleanup process...');
+      console.log("Starting cleanup process...");
       await transaction(db, async (conn) => {
         // Remove all data for this repository
         await conn.run(
@@ -560,9 +616,9 @@ export class GitHubIssueSyncManager {
           `${this.owner}/${this.repo}`
         );
       });
-      console.log('Cleanup complete');
+      console.log("Cleanup complete");
     } catch (error) {
-      console.error('Failed to cleanup repository data:', error);
+      console.error("Failed to cleanup repository data:", error);
       throw error;
     }
   }
