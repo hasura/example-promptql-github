@@ -41,6 +41,9 @@ definition:
     - name: userLogin
       type: String
       description: No description available
+    - name: isPullRequest
+      type: Boolean
+      description: No description available
   graphql:
     typeName: GithubIssues
     inputTypeName: GithubIssuesInput
@@ -84,6 +87,9 @@ definition:
         userLogin:
           column:
             name: user_login
+        isPullRequest:
+          column:
+            name: is_pull_request
 
 ---
 kind: TypePermissions
@@ -106,6 +112,7 @@ definition:
           - title
           - updatedAt
           - userLogin
+          - isPullRequest
 
 ---
 kind: BooleanExpressionType
@@ -140,6 +147,8 @@ definition:
           booleanExpressionType: TimestampBoolExp
         - fieldName: userLogin
           booleanExpressionType: StringBoolExp
+        - fieldName: isPullRequest
+          booleanExpressionType: BooleanBoolExp
       comparableRelationships: []
   logicalOperators:
     enable: true
@@ -181,6 +190,8 @@ definition:
           aggregateExpression: TimestampAggExp
         - fieldName: userLogin
           aggregateExpression: StringAggExp
+        - fieldName: isPullRequest
+          aggregateExpression: BooleanAggExp
   count:
     enable: true
   graphql:
@@ -232,6 +243,9 @@ definition:
       orderByDirections:
         enableAll: true
     - fieldName: userLogin
+      orderByDirections:
+        enableAll: true
+    - fieldName: isPullRequest
       orderByDirections:
         enableAll: true
   graphql:

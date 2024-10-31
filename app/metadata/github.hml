@@ -297,6 +297,13 @@ definition:
                 underlying_type:
                   type: named
                   name: BigInt
+            is_pull_request:
+              description: No description available
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             labels:
               description: No description available
               type:

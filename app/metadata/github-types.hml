@@ -246,3 +246,45 @@ definition:
   graphql:
     selectTypeName: IntAggExp
 
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: BooleanBoolExp
+  operand:
+    scalar:
+      type: Boolean
+      comparisonOperators:
+        - name: _eq
+          argumentType: Boolean!
+      dataConnectorOperatorMapping:
+        - dataConnectorName: github
+          dataConnectorScalarType: Boolean
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: BooleanBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: BooleanAggExp
+  operand:
+    scalar:
+      aggregatedType: Boolean
+      aggregationFunctions: []
+      dataConnectorAggregationFunctionMapping:
+        - dataConnectorName: github
+          dataConnectorScalarType: Boolean
+          functionMapping: {}
+  count:
+    enable: true
+  countDistinct:
+    enable: true
+  graphql:
+    selectTypeName: BooleanAggExp
+

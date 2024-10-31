@@ -5,6 +5,7 @@ export const GithubIssuesSyncSchema = `
         CREATE TABLE IF NOT EXISTS github_issues (
           id bigint PRIMARY KEY,
           number INTEGER,
+          is_pull_request BOOLEAN,
           title TEXT,
           body TEXT,
           state TEXT,
@@ -42,6 +43,7 @@ export const GithubIssuesSyncSchema = `
 interface Issue {
   id: bigint;
   number: number;
+  pull_request: any;
   title: string;
   body: string;
   state: string;
@@ -381,12 +383,13 @@ export class GitHubIssueSyncManager {
           await conn.run(
             `
             INSERT OR REPLACE INTO github_issues (
-              id, number, title, body, state, created_at, updated_at, closed_at,
+              id, number, is_pull_request, title, body, state, created_at, updated_at, closed_at,
               user_login, labels, comment_count, repository
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `,
             issue.id,
             issue.number,
+            !!issue.pull_request,
             issue.title,
             issue.body,
             issue.state,
