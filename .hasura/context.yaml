@@ -4,11 +4,9 @@ definition:
   current: default
   contexts:
     default:
-      project: clear-panther-4845
       supergraph: ../supergraph.yaml
       subgraph: ../app/subgraph.yaml
       localEnvFile: ../.env
-      cloudEnvFile: ../.env.cloud
   scripts:
     docker-start:
       bash: HASURA_DDN_PAT=$(ddn auth print-pat) PROMPTQL_SECRET_KEY=$(ddn auth print-promptql-secret-key) docker compose -f compose.yaml --env-file .env up --build --pull always
