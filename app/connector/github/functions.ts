@@ -1,4 +1,5 @@
 import { getDB, transaction } from "@hasura/ndc-duckduckapi";
+import { ExponentialBackoff } from "./ExponentialBackoff";
 
 export const GithubIssuesSyncSchema = `
         CREATE TABLE IF NOT EXISTS github_issues (
@@ -119,8 +120,16 @@ export class GitHubIssueSyncManager {
     return response.json();
   }
 
-  async initialize(token: string): Promise<boolean> {
-    try {
+  async initialize(token: string): Promise<void> {
+    const backoff = new ExponentialBackoff({
+      initialDelay: 5 * 1000,
+      maxDelay: 65 * 60 * 1000,
+      maxAttempts: 0,
+      factor: 2,
+      jitter: false,
+    });
+
+    await backoff.execute(async () => {
       this.getSyncStatus();
       console.log("Starting initialization...");
       this.token = token;
@@ -141,12 +150,7 @@ export class GitHubIssueSyncManager {
         () => this.syncIssuesAndComments(),
         5 * 60 * 1000
       );
-
-      return true;
-    } catch (error) {
-      console.error("Initialization failed:", error);
-      return false;
-    }
+    });
   }
 
   private async getLastIssueSyncState(): Promise<SyncState | null> {
