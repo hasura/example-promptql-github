@@ -3,7 +3,7 @@ kind: ObjectType
 version: v1
 definition:
   name: GithubIssues
-  description: No description available
+  description: Github issues and pull requests mixed together, distinguished by the isPullRequest field
   fields:
     - name: body
       type: String
@@ -43,7 +43,7 @@ definition:
       description: No description available
     - name: isPullRequest
       type: Boolean
-      description: No description available
+      description: If true, this is a pull request, otherwise it is an issue
   graphql:
     typeName: GithubIssues
     inputTypeName: GithubIssuesInput
@@ -256,7 +256,7 @@ definition:
     filterInputTypeName: GithubIssuesFilterInput
     aggregate:
       queryRootField: githubIssuesAggregate
-  description: No description available
+  description: Github issues and pull requests together, distinguished by the isPullRequest field
 
 ---
 kind: ModelPermissions
